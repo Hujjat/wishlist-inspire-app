@@ -51,7 +51,7 @@ export default function PricingPage() {
       <ui-title-bar title="Pricing" />
       <CalloutCard
           title="Upgrade to pro"
-          illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+          illustration="https://cdn.shopify.com/s/files/1/0583/6465/7734/files/tag.png?v=1705280535"
           primaryAction={{
             content: 'Upgrade to pro',
             url: '#',
