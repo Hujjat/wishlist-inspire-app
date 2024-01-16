@@ -8,7 +8,6 @@ import {
   Grid,
   Divider,
   BlockStack,
-  Icon,
   ExceptionList
 } from "@shopify/polaris";
 
@@ -78,7 +77,7 @@ export default function PricingPage() {
                 <Box as="p" variant="bodyMd">
                   {plan.description}
                   {/* If plan is 0, display nothing */}
-                  <Text as="p" fontWeight="bold">
+                  <Text as="span" fontWeight="bold">
                     {plan.price === "0" ? "" : "$" + plan.price}
                   </Text>
                 </Box>
@@ -112,22 +111,5 @@ export default function PricingPage() {
       </Grid>
 
     </Page>
-  );
-}
-
-function Code({ children }) {
-  return (
-    <Box
-      as="span"
-      padding="025"
-      paddingInlineStart="100"
-      paddingInlineEnd="100"
-      background="bg-surface-active"
-      borderWidth="025"
-      borderColor="border"
-      borderRadius="100"
-    >
-      <code>{children}</code>
-    </Box>
   );
 }
