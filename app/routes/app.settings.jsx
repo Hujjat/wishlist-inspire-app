@@ -6,9 +6,34 @@ import {
   BlockStack,
   InlineGrid,
   TextField,
+Button,
 } from "@shopify/polaris";
+import { useState } from "react";
+import { json } from "@remix-run/node";
+import { useLoaderData, Form } from "@remix-run/react";
+
+export async function loader() {
+  // get data from database
+  let settings = {
+    name: "My app updated",
+    description: "My app description",
+  }
+  return json(settings);
+}
+
+
+export async function action({ request }) {
+  // updates persistent data
+  let settings = await request.formData();
+  settings = Object.fromEntries(settings);
+
+  return json(settings);
+}
 
 export default function SettingsPage() {
+  const settings = useLoaderData();
+
+  const [formState, setFormState] = useState(settings);
 
   return (
     <Page>
@@ -30,10 +55,14 @@ export default function SettingsPage() {
             </BlockStack>
           </Box>
           <Card roundedAbove="sm">
-            <BlockStack gap="400">
-              <TextField label="App name" />
-              <TextField label="Description" />
-            </BlockStack>
+            <Form method="POST">
+              <BlockStack gap="400">
+                <TextField label="App name" name="name" value={formState.name} onChange={(value) => setFormState({ ...formState, name: value })} />
+                <TextField label="Description" name="description" value={formState.description} onChange={(value) => setFormState({ ...formState, description: value })} />
+
+                <Button submit={true}>Save </Button>
+              </BlockStack>
+            </Form>
           </Card>
         </InlineGrid>
 
