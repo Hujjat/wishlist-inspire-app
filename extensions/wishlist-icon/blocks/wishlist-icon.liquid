@@ -1,0 +1,60 @@
+<div class="wishlist-inspire__icon">
+
+  <button type="button" class="">
+    <svg class="wishlist-inspire__icon--svg" viewBox="0 0 24 24" fill="{{ block.settings.colour }}">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.73 2 12.27 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.77-3.4 7.23-8.55 11.53L12 21.35z"/>
+    </svg>
+    {% if block.settings.text != blank %}
+      <span class="wishlist-inspire__icon--text">{{ block.settings.text }}</span>
+    {% endif %}
+  </button>
+
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+
+<style>
+  .wishlist-inspire__icon{
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+  }
+  .wishlist-inspire__icon button{
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+</style>
+{% schema %}
+{
+  "name": "Wishlist icon",
+  "target": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "product",
+      "autofill": true
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Add to wishlist"
+    },
+    {
+      "type": "color",
+      "id": "colour",
+      "label": "Icon Colour",
+      "default": "#ff0000"
+    }
+  ]
+}
+{% endschema %}
+
