@@ -12,12 +12,12 @@ import { useState } from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData, Form } from "@remix-run/react";
 
+// Import primsa db
+import db from "../db.server";
+
 export async function loader() {
   // get data from database
-  let settings = {
-    name: "My app updated",
-    description: "My app description",
-  }
+  let settings = await db.settings.findFirst();
   return json(settings);
 }
 
@@ -26,6 +26,23 @@ export async function action({ request }) {
   // updates persistent data
   let settings = await request.formData();
   settings = Object.fromEntries(settings);
+
+  // update database
+  await db.settings.upsert({
+    where: {
+      id: '1'
+    },
+    update: {
+      id: '1',
+      name: settings.name,
+      description: settings.description
+    },
+    create: {
+      id: '1',
+      name: settings.name,
+      description: settings.description
+    }
+  });
 
   return json(settings);
 }
@@ -57,8 +74,8 @@ export default function SettingsPage() {
           <Card roundedAbove="sm">
             <Form method="POST">
               <BlockStack gap="400">
-                <TextField label="App name" name="name" value={formState.name} onChange={(value) => setFormState({ ...formState, name: value })} />
-                <TextField label="Description" name="description" value={formState.description} onChange={(value) => setFormState({ ...formState, description: value })} />
+                <TextField label="App name" name="name" value={formState?.name} onChange={(value) => setFormState({ ...formState, name: value })} />
+                <TextField label="Description" name="description" value={formState?.description} onChange={(value) => setFormState({ ...formState, description: value })} />
 
                 <Button submit={true}>Save </Button>
               </BlockStack>
