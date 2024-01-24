@@ -1,5 +1,7 @@
 import { json } from "@remix-run/node";
 import db from "../db.server";
+import { cors } from 'remix-utils/cors';
+
 
 export async function loader() {
   return json({
@@ -7,6 +9,7 @@ export async function loader() {
     message: "Hello from the API",
   });
 }
+
 
 // Expexted data comes from post request. If
 // customerID, productID, shop
@@ -20,7 +23,10 @@ export async function action({ request }) {
   const shop = data.shop;
 
   if(!customerId || !productId || !shop) {
-    return json({ message: "Missing data. Required data: customerId, productId, shop", method: method });
+    return json({
+      message: "Missing data. Required data: customerId, productId, shop",
+      method: method
+    });
   }
 
   switch (method) {
@@ -35,7 +41,8 @@ export async function action({ request }) {
         },
       });
 
-      return json({ message: "Product added to wishlist", method: "POST", wishlist: wishlist });
+      const response = json({ message: "Product added to wishlist", method: "POST", wishlist: wishlist });
+      return cors(request, response);
 
     case "PATCH":
       // Handle PATCH request logic here

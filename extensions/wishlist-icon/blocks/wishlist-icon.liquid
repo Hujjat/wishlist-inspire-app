@@ -17,10 +17,33 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('wishlist', () => ({
             wishlisted: false,
-
+            appUrl: "https://determined-q-mexico-remainder.trycloudflare.com/",
             addToWishlist() {
-                this.wishlisted = !this.wishlisted
-                // TODO: send data to database
+                // TODO: send data to database save wishlist
+                {%  unless customer  %}
+                  // If customer is not login, show an alert to login
+                  alert('Please login to add to wishlist');
+                  return;
+                {% endunless %}
+
+                var formdata = new FormData();
+                formdata.append("customerId", "{{ customer.id }}");
+                formdata.append("productId", "{{ product.id }}");
+                formdata.append("shop", "{{ shop.permanent_domain }}");
+
+                var requestOptions = {
+                  method: 'POST',
+                  body: formdata,
+                  redirect: 'follow'
+                };
+
+                fetch(this.appUrl + "api/wishlist", requestOptions)
+                  .then(response => response.text())
+                  .then(result => {
+                      this.wishlisted = !this.wishlisted;
+                  })
+                  .catch(error => console.log('error', error));
+
             }
         }))
     })

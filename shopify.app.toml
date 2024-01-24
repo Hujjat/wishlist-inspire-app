@@ -2,7 +2,7 @@
 
 name = "wishlist-inspire"
 client_id = "27c80af1600e58b82353ae2627cebe2d"
-application_url = "https://dod-pi-cb-incentive.trycloudflare.com"
+application_url = "https://determined-q-mexico-remainder.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://dod-pi-cb-incentive.trycloudflare.com/auth/callback",
-  "https://dod-pi-cb-incentive.trycloudflare.com/auth/shopify/callback",
-  "https://dod-pi-cb-incentive.trycloudflare.com/api/auth/callback"
+  "https://determined-q-mexico-remainder.trycloudflare.com/auth/callback",
+  "https://determined-q-mexico-remainder.trycloudflare.com/auth/shopify/callback",
+  "https://determined-q-mexico-remainder.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
