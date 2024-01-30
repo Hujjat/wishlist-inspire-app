@@ -3,11 +3,40 @@ import db from "../db.server";
 import { cors } from 'remix-utils/cors';
 
 
-export async function loader() {
-  return json({
-    ok: true,
-    message: "Hello from the API",
+// get request: accept request with request: customerId, shop, productId.
+// read database and return wishlist items for that customer.
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const customerId = url.searchParams.get("customerId");
+  const shop = url.searchParams.get("shop");
+  const productId = url.searchParams.get("productId");
+
+
+  if(!customerId || !shop || !productId) {
+    return json({
+      message: "Missing data. Required data: customerId, productId, shop",
+      method: "GET"
+    });
+  }
+
+  // If customerId, shop, productId is provided, return wishlist items for that customer.
+  const wishlist = await db.wishlist.findMany({
+    where: {
+      customerId: customerId,
+      shop: shop,
+      productId: productId,
+    },
   });
+
+
+  const response = json({
+    ok: true,
+    message: "Success",
+    data: wishlist,
+  });
+
+  return cors(request, response);
+
 }
 
 
@@ -15,22 +44,24 @@ export async function loader() {
 // customerID, productID, shop
 export async function action({ request }) {
 
-  const method = request.method;
   let data = await request.formData();
   data = Object.fromEntries(data);
   const customerId = data.customerId;
   const productId = data.productId;
   const shop = data.shop;
+  const _action = data._action;
 
-  if(!customerId || !productId || !shop) {
+  if(!customerId || !productId || !shop || !_action) {
     return json({
-      message: "Missing data. Required data: customerId, productId, shop",
-      method: method
+      message: "Missing data. Required data: customerId, productId, shop, _action",
+      method: _action
     });
   }
 
-  switch (method) {
-    case "POST":
+  let response;
+
+  switch (_action) {
+    case "CREATE":
       // Handle POST request logic here
       // For example, adding a new item to the wishlist
       const wishlist = await db.wishlist.create({
@@ -41,7 +72,7 @@ export async function action({ request }) {
         },
       });
 
-      const response = json({ message: "Product added to wishlist", method: "POST", wishlist: wishlist });
+      response = json({ message: "Product added to wishlist", method: _action, wishlisted: true });
       return cors(request, response);
 
     case "PATCH":
@@ -50,9 +81,18 @@ export async function action({ request }) {
       return json({ message: "Success", method: "Patch" });
 
     case "DELETE":
-      // Handle DELETE request logic here
+      // Handle DELETE request logic here (Not tested)
       // For example, removing an item from the wishlist
-      return json({ message: "Product removed from your wishlist", method: "Delete" });
+      await db.wishlist.deleteMany({
+        where: {
+          customerId: customerId,
+          shop: shop,
+          productId: productId,
+        },
+      });
+
+      response = json({ message: "Product removed from your wishlist", method: _action, wishlisted: false });
+      return cors(request, response);
 
     default:
       // Optional: handle other methods or return a method not allowed response

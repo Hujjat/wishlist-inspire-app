@@ -1,6 +1,6 @@
 <div class="wishlist-inspire__icon" x-data="wishlist">
 
-  <button type="button" @click="addToWishlist()">
+  <button type="button" @click.debounce="addToWishlist()">
     <svg class="wishlist-inspire__icon--svg" viewBox="0 0 24 24" stroke-width="2" stroke="#000" :fill="wishlisted ? '#000': '#fff' ">
       <path d="M12 21.35l-1.45-1.32C5.4 15.73 2 12.27 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.77-3.4 7.23-8.55 11.53L12 21.35z"/>
     </svg>
@@ -16,8 +16,18 @@
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('wishlist', () => ({
+            init(){
+              fetch(this.appUrl + "api/wishlist"+"?customerId={{ customer.id }}&productId={{ product.id }}&shop={{ shop.permanent_domain }}")
+                  .then(response => response.json())
+                  .then(result => {
+                      if(result.data.length > 0){
+                        this.wishlisted = true;
+                      }
+                  })
+                  .catch(error => console.log('error', error));
+            },
             wishlisted: false,
-            appUrl: "https://determined-q-mexico-remainder.trycloudflare.com/",
+            appUrl: "https://timothy-reflected-ep-uniprotkb.trycloudflare.com/",
             addToWishlist() {
                 // TODO: send data to database save wishlist
                 {%  unless customer  %}
@@ -30,6 +40,14 @@
                 formdata.append("customerId", "{{ customer.id }}");
                 formdata.append("productId", "{{ product.id }}");
                 formdata.append("shop", "{{ shop.permanent_domain }}");
+                formdata.append("_action", "CREATE");
+
+                // If product is already in wishlist, remove it
+                if(this.wishlisted){
+                  this.wishlisted = false;
+                  // update formdata _action to delete
+                  formdata.set("_action", "DELETE");
+                }
 
                 var requestOptions = {
                   method: 'POST',
@@ -38,11 +56,16 @@
                 };
 
                 fetch(this.appUrl + "api/wishlist", requestOptions)
-                  .then(response => response.text())
-                  .then(result => {
-                      this.wishlisted = !this.wishlisted;
-                  })
-                  .catch(error => console.log('error', error));
+                    .then(response => response.json())
+                    .then(result => {
+                        if(result.wishlisted){
+                          this.wishlisted = true;
+                        }else{
+                          this.wishlisted = false;
+                        }
+                    })
+                    .catch(error => console.log('error', error));
+
 
             }
         }))
