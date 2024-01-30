@@ -176,6 +176,24 @@ export default function Index() {
                     App template specs
                   </Text>
                   <BlockStack gap="200">
+
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        Course content
+                      </Text>
+                      <Link url="https://youtube.com/codeinspire" target="_blank" removeUnderline>
+                        Codeinspire
+                      </Link>
+                    </InlineStack>
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        Source code
+                      </Text>
+                      <Link url="https://github.com/Hujjat" target="_blank" removeUnderline>
+                        Github
+                      </Link>
+                    </InlineStack>
+
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         Framework
@@ -234,6 +252,7 @@ export default function Index() {
                         GraphQL API
                       </Link>
                     </InlineStack>
+
                   </BlockStack>
                 </BlockStack>
               </Card>
@@ -244,27 +263,14 @@ export default function Index() {
                   </Text>
                   <List>
                     <List.Item>
-                      Build an{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
-                        target="_blank"
-                        removeUnderline
-                      >
+                      Build a
+                      <Link url="https://youtube.com/codeinspire" target="_blank" removeUnderline >
                         {" "}
-                        example app
+                        Wishlist app
                       </Link>{" "}
                       to get started
                     </List.Item>
-                    <List.Item>
-                      Explore Shopify’s API with{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        GraphiQL
-                      </Link>
-                    </List.Item>
+
                   </List>
                 </BlockStack>
               </Card>
