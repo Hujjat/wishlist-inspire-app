@@ -10,11 +10,12 @@ import {
   Link,
   InlineStack,
   EmptyState,
-  IndexTable,
+  DataTable,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { useLoaderData } from "@remix-run/react";
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 
 
@@ -43,25 +44,10 @@ export const action = async ({ request }) => {
 
 export default function Index() {
   const wishlistData = useLoaderData();
-  console.log('wishlistData: -------> ', wishlistData);
-
-  const rowMarkup = wishlistData.map(
-    ({id, customerId, productId },index) => (
-      <IndexTable.Row id={id} key={id} position={index}>
-        <IndexTable.Cell>
-          <Text variant="bodyMd" fontWeight="bold" as="span">
-            {customerId}
-          </Text>
-        </IndexTable.Cell>
-        <IndexTable.Cell>{productId}</IndexTable.Cell>
-      </IndexTable.Row>
-    ),
-  );
-
-  const resourceName = {
-    singular: 'wishlist',
-    plural: 'Wishlists',
-  };
+  const wishlistArray = wishlistData.map((item) => {
+    const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true });
+    return [item.customerId, item.productId, createdAt];
+  });
 
 
   return (
@@ -73,16 +59,18 @@ export default function Index() {
           <Layout.Section>
             <Card>
               {wishlistData.length > 0 ? (
-                <IndexTable
-                  resourceName={resourceName}
-                  itemCount={wishlistData.length}
-                  headings={[
-                    { title: 'Customer ID' },
-                    { title: 'Product ID' },
-                  ]}
-                >
-                  {rowMarkup}
-                </IndexTable>
+                 <DataTable
+                    columnContentTypes={[
+                      'text',
+                      'text',
+                      'text',
+                    ]}
+                    headings={[
+                      'Customer ID',
+                      'Product ID',
+                      'Created At',
+                    ]}
+                    rows={wishlistArray}/>
               ) : (
                 <EmptyState
                   heading="Manage your wishlist products here"
