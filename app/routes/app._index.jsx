@@ -1,114 +1,106 @@
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
-import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
   Text,
   Card,
-  Button,
   BlockStack,
-  Box,
   List,
   Link,
   InlineStack,
   EmptyState,
+  IndexTable,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
+import db from "../db.server";
+import { useLoaderData } from "@remix-run/react";
+
+
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+  const auth = await authenticate.admin(request);
+  const shop = auth.session.shop;
+  console.log('shop: -------> ', shop);
+  // get data from database for that shop acending by id
+  const wishlistData = await db.wishlist.findMany({
+    where: {
+      shop: shop,
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
 
-  return null;
+  console.log('wishlistData: -------> ', wishlistData);
+
+  return json(wishlistData);
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($input: ProductInput!) {
-        productCreate(input: $input) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }`,
-    {
-      variables: {
-        input: {
-          title: `${color} Snowboard`,
-          variants: [{ price: Math.random() * 100 }],
-        },
-      },
-    }
-  );
-  const responseJson = await response.json();
 
-  return json({
-    product: responseJson.data.productCreate.product,
-  });
 };
 
 export default function Index() {
-  const nav = useNavigation();
-  const actionData = useActionData();
-  const submit = useSubmit();
-  const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const productId = actionData?.product?.id.replace(
-    "gid://shopify/Product/",
-    ""
+  const wishlistData = useLoaderData();
+  console.log('wishlistData: -------> ', wishlistData);
+
+  const rowMarkup = wishlistData.map(
+    ({id, customerId, productId },index) => (
+      <IndexTable.Row id={id} key={id} position={index}>
+        <IndexTable.Cell>
+          <Text variant="bodyMd" fontWeight="bold" as="span">
+            {customerId}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>{productId}</IndexTable.Cell>
+      </IndexTable.Row>
+    ),
   );
 
-  useEffect(() => {
-    if (productId) {
-      shopify.toast.show("Product created");
-    }
-  }, [productId]);
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+  const resourceName = {
+    singular: 'wishlist',
+    plural: 'Wishlists',
+  };
+
 
   return (
-    <Page>
+    <Page title="Wishlist overview dashboard">
       <ui-title-bar title="Overview">
       </ui-title-bar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
             <Card>
-            <EmptyState
-                heading="Manage your wishlist products here"
-                action={{
-                  content: 'Learn more',
-                  url: 'https://youtube.com/codeinspire',
-                  external: true,
-                }}
-                secondaryAction={{
-                  content: 'Watch videos',
-                  url: 'https://youtube.com/codeinspire',
-                  external: true,
-                }}
-                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-              >
-              <p>
-                You don't have any products in your wishlist yet.
-              </p>
-            </EmptyState>
+              {wishlistData.length > 0 ? (
+                <IndexTable
+                  resourceName={resourceName}
+                  itemCount={wishlistData.length}
+                  headings={[
+                    { title: 'Customer ID' },
+                    { title: 'Product ID' },
+                  ]}
+                >
+                  {rowMarkup}
+                </IndexTable>
+              ) : (
+                <EmptyState
+                  heading="Manage your wishlist products here"
+                  action={{
+                    content: 'Learn more',
+                    url: 'https://youtube.com/codeinspire',
+                    external: true,
+                  }}
+                  secondaryAction={{
+                    content: 'Watch videos',
+                    url: 'https://youtube.com/codeinspire',
+                    external: true,
+                  }}
+                  image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+                >
+                  <p>You don't have any products in your wishlist yet.</p>
+                </EmptyState>
+              )}
 
             </Card>
           </Layout.Section>
