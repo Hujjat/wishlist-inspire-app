@@ -10,10 +10,44 @@ import {
   BlockStack,
   ExceptionList
 } from "@shopify/polaris";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { authenticate, MONTHLY_PLAN, ANNUAL_PLAN } from "../shopify.server";
 
 import {
   MobileAcceptMajor
 } from '@shopify/polaris-icons'
+
+export async function loader({ request }) {
+  const { billing } = await authenticate.admin(request);
+
+  try {
+    // Attempt to check if the shop has an active payment for any plan
+    const billingCheck = await billing.require({
+      plans: [MONTHLY_PLAN, ANNUAL_PLAN],
+      isTest: true,
+      // Instead of redirecting on failure, just catch the error
+      onFailure: () => {
+        throw new Error('No active plan');
+      },
+    });
+
+    // If the shop has an active subscription, log and return the details
+    const subscription = billingCheck.appSubscriptions[0];
+    console.log(`Shop is on ${subscription.name} (id ${subscription.id})`);
+    return json({ billing, plan: subscription });
+
+  } catch (error) {
+    // If the shop does not have an active plan, return an empty plan object
+    if (error.message === 'No active plan') {
+      console.log('Shop does not have any active plans.');
+      return json({ billing, plan: { name: "Free" } });
+    }
+    // If there is another error, rethrow it
+    throw error;
+  }
+}
+
 
 let planData = [
   {
@@ -21,7 +55,8 @@ let planData = [
     description: "Free plan with basic features",
     price: "0",
     action: "Upgrade to pro",
-    url: "#",
+    name: "Free",
+    url: "/app/upgrade",
     features: [
       "100 wishlist per day",
       "500 Products",
@@ -33,8 +68,9 @@ let planData = [
     title: "Pro",
     description: "Pro plan with advanced features",
     price: "10",
+    name: "Monthly subscription",
     action: "Upgrade to pro",
-    url: "#",
+    url: "/app/upgrade",
     features: [
       "Unlimted wishlist per day",
       "10000 Products",
@@ -45,15 +81,18 @@ let planData = [
 ]
 
 export default function PricingPage() {
+  const { plan } = useLoaderData();
+
+  console.log('plan', plan);
   return (
     <Page>
       <ui-title-bar title="Pricing" />
       <CalloutCard
-          title="Upgrade to pro"
+          title="Change your plan"
           illustration="https://cdn.shopify.com/s/files/1/0583/6465/7734/files/tag.png?v=1705280535"
           primaryAction={{
-            content: 'Upgrade to pro',
-            url: '#',
+            content: 'Cancel Plan',
+            url: '/app/cancel',
           }}
         >
         <p>
@@ -67,18 +106,19 @@ export default function PricingPage() {
 
       <Grid>
 
-        {planData.map((plan, index) => (
+        {planData.map((plan_item, index) => (
           <Grid.Cell key={index} columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
-            <Card>
+            <Card background={ plan_item.name == plan.name ? "bg-surface-success" : "bg-surface" } sectioned>
               <Box padding="400">
                 <Text as="h3" variant="headingMd">
-                  {plan.title}
+                  {plan_item.title}
                 </Text>
                 <Box as="p" variant="bodyMd">
-                  {plan.description}
-                  {/* If plan is 0, display nothing */}
-                  <Text as="span" fontWeight="bold">
-                    {plan.price === "0" ? "" : "$" + plan.price}
+                  {plan_item.description}
+                  {/* If plan_item is 0, display nothing */}
+                  <br />
+                  <Text as="h4" variant="headingLg" fontWeight="bold">
+                    {plan_item.price === "0" ? "" : "$" + plan_item.price}
                   </Text>
                 </Box>
 
@@ -87,7 +127,7 @@ export default function PricingPage() {
                 </div>
 
                 <BlockStack gap={100}>
-                  {plan.features.map((feature, index) => (
+                  {plan_item.features.map((feature, index) => (
                     <ExceptionList
                       key={index}
                       items={[
@@ -102,7 +142,9 @@ export default function PricingPage() {
                 <div style={{ margin: "0.5rem 0"}}>
                   <Divider />
                 </div>
-                <Button>{plan.action}</Button>
+                <Button primary url={plan_item.url}>
+                  {plan_item.action}
+                </Button>
               </Box>
             </Card>
           </Grid.Cell>
