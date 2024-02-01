@@ -16,4 +16,6 @@ export const loader = async ({ request }) => {
     }),
   });
   // App logic
+
+  return null;
 };
