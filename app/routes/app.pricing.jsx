@@ -62,6 +62,7 @@ let planData = [
       "500 Products",
       "Basic customization",
       "Basic support",
+      "Basic analytics"
     ]
   },
   {
@@ -76,6 +77,7 @@ let planData = [
       "10000 Products",
       "Advanced customization",
       "Priority support",
+      "Advanced analytics"
     ]
   },
 ]
