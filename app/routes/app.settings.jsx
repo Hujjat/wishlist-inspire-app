@@ -16,9 +16,14 @@ import { authenticate } from "../shopify.server";
 // Import primsa db
 import db from "../db.server";
 
-export async function loader() {
+export async function loader({ request}) {
+  const { session } = await authenticate.admin(request);
   // get data from database
-  let settings = await db.settings.findFirst();
+  let settings = await db.settings.findFirst({
+    where: {
+      shop: session.shop,
+    },
+  });
   return json(settings);
 }
 
