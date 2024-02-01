@@ -77,12 +77,12 @@ export default function Index() {
                   action={{
                     content: 'Learn more',
                     url: 'https://youtube.com/codeinspire',
-                    external: true,
+                    external: "true",
                   }}
                   secondaryAction={{
                     content: 'Watch videos',
                     url: 'https://youtube.com/codeinspire',
-                    external: true,
+                    external: "true",
                   }}
                   image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
                 >

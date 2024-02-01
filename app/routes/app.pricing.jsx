@@ -95,9 +95,15 @@ export default function PricingPage() {
             url: '/app/cancel',
           }}
         >
-        <p>
-          You're currently on free plan. Upgrade to pro to unlock more features.
-        </p>
+          { plan.name == "Monthly subscription" ? (
+            <p>
+              You're currently on pro plan. All features are unlocked.
+            </p>
+          ) : (
+            <p>
+              You're currently on free plan. Upgrade to pro to unlock more features.
+            </p>
+          )}
       </CalloutCard>
 
       <div style={{ margin: "0.5rem 0"}}>
@@ -117,7 +123,7 @@ export default function PricingPage() {
                   {plan_item.description}
                   {/* If plan_item is 0, display nothing */}
                   <br />
-                  <Text as="h4" variant="headingLg" fontWeight="bold">
+                  <Text as="p" variant="headingLg" fontWeight="bold">
                     {plan_item.price === "0" ? "" : "$" + plan_item.price}
                   </Text>
                 </Box>
@@ -142,9 +148,18 @@ export default function PricingPage() {
                 <div style={{ margin: "0.5rem 0"}}>
                   <Divider />
                 </div>
-                <Button primary url={plan_item.url}>
-                  {plan_item.action}
-                </Button>
+
+                { plan_item.name == "Monthly subscription" ?
+                  plan.name != "Monthly subscription" ? (
+                    <Button primary url={plan_item.url}>
+                      {plan_item.action}
+                    </Button>
+                  ) : (
+                    <Text as="p" variant="bodyMd">
+                      You're currently on this plan
+                    </Text>
+                  )
+                : null }
               </Box>
             </Card>
           </Grid.Cell>
