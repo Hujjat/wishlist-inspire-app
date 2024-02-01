@@ -25,6 +25,7 @@ model Session {
 
 model Settings {
   id          Int    @id @default(autoincrement())
+  shop        String?  @unique
   name        String
   description String?
 }

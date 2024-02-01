@@ -11,6 +11,7 @@ Button,
 import { useState } from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData, Form } from "@remix-run/react";
+import { authenticate } from "../shopify.server";
 
 // Import primsa db
 import db from "../db.server";
@@ -26,21 +27,20 @@ export async function action({ request }) {
   // updates persistent data
   let settings = await request.formData();
   settings = Object.fromEntries(settings);
+  const { session } = await authenticate.admin(request);
 
   // update database
   await db.settings.upsert({
-    where: {
-      id: '1'
-    },
+    where: { shop: session.shop },
     update: {
-      id: '1',
       name: settings.name,
-      description: settings.description
+      description: settings.description,
+      shop: session.shop
     },
     create: {
-      id: '1',
       name: settings.name,
-      description: settings.description
+      description: settings.description,
+      shop: session.shop
     }
   });
 
