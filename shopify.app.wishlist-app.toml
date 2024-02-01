@@ -2,7 +2,7 @@
 
 name = "wishlist-app"
 client_id = "a3ced992a5e81ea643e85f3e163f06a1"
-application_url = "https://autumn-triple-warm-isp.trycloudflare.com"
+application_url = "https://possibly-spatial-signature-campaigns.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,17 +11,13 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://autumn-triple-warm-isp.trycloudflare.com/auth/callback",
-  "https://autumn-triple-warm-isp.trycloudflare.com/auth/shopify/callback",
-  "https://autumn-triple-warm-isp.trycloudflare.com/api/auth/callback"
+  "https://possibly-spatial-signature-campaigns.trycloudflare.com/auth/callback",
+  "https://possibly-spatial-signature-campaigns.trycloudflare.com/auth/shopify/callback",
+  "https://possibly-spatial-signature-campaigns.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
-api_version = "2023-10"
+api_version = "2024-01"
 
 [pos]
 embedded = false
-
-[build]
-automatically_update_urls_on_dev = true
-dev_store_url = "test-checkout-ex.myshopify.com"
