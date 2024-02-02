@@ -21,3 +21,6 @@ api_version = "2024-01"
 
 [pos]
 embedded = false
+
+[build]
+dev_store_url = "test-checkout-ex.myshopify.com"
