@@ -6,10 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL") // uses connection pooling
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
 }
-
 
 model Session {
   id          String    @id
