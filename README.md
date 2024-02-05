@@ -1,5 +1,7 @@
 # Shopify App Template - Remix
 
+This repo is based on a YouTube Course [Shopify app development with Remix](https://youtube.com/codeinspire). Learn how to build the app from scratch. 
+
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
 
 Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
